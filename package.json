@@ -33,11 +33,13 @@
   "homepage": "https://github.com/qiphon/vue-print#readme",
   "devDependencies": {
     "@ant-design/cssinjs": "^1.23.0",
+    "@qiphon/prettier-config": "^1.0.1",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.2",
     "dumi": "^2.4.21",
+    "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "rollup": "^3.29.5"
   }
