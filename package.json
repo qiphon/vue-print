@@ -1,6 +1,6 @@
 {
   "name": "@qiphon/vue-print",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "dist/vue-print.cjs.js",
   "module": "dist/vue-print.esm.js",
@@ -21,8 +21,11 @@
     "url": "git+https://github.com/qiphon/vue-print.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "qiphon",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "bugs": {
     "url": "https://github.com/qiphon/vue-print/issues"

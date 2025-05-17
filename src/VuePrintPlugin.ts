@@ -2,7 +2,7 @@
  * @class PrintPlugin
  * @classdesc A plugin for printing HTML elements, with support for previews, async content, and various HTML standards.
  */
-class PrintPlugin {
+export class PrintPlugin {
   /**
    * Creates an instance of PrintPlugin.
    * @param {object} options - The configuration options for the print plugin.
@@ -602,7 +602,7 @@ class PrintPlugin {
   }
 }
 
-const VuePrintPlugin = {
+export const VuePrintPlugin = {
   directiveName: 'printv1', // Default directive name
 
   /**
@@ -731,4 +731,4 @@ const VuePrintPlugin = {
   },
 }
 
-export default VuePrintPlugin
+

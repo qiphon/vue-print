@@ -8,14 +8,14 @@ import path from 'path';
 const packageJsonPath = path.resolve(process.cwd(), 'package.json');
 const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 
-const input = 'src/VuePrintPlugin.ts';
+const input = 'src/index.ts';
 
 export default [
   // UMD build
   {
     input,
     output: {
-      file: `dist/${pkg.name}.umd.js`,
+      file: `dist/vue-print.umd.js`,
       format: 'umd',
       name: 'VuePrintPlugin', // window.VuePrintPlugin
       globals: {
@@ -24,7 +24,7 @@ export default [
       sourcemap: true,
     },
     plugins: [
-      typescript({ tsconfig: './tsconfig.json' }),
+      typescript({ tsconfig: './tsconfig.json', declaration: true, declarationDir: 'dist', rootDir: 'src' }),
       resolve(),
       commonjs(),
       terser()
@@ -35,12 +35,12 @@ export default [
   {
     input,
     output: {
-      file: `dist/${pkg.name}.esm.js`,
+      file: pkg.module,
       format: 'es',
       sourcemap: true,
     },
     plugins: [
-      typescript({ tsconfig: './tsconfig.json' }),
+      typescript({ tsconfig: './tsconfig.json', declaration: true, declarationDir: 'dist', rootDir: 'src' }),
       resolve(),
       commonjs(),
       terser()
@@ -51,12 +51,12 @@ export default [
   {
     input,
     output: {
-      file: `dist/${pkg.name}.cjs.js`,
+      file: pkg.main,
       format: 'cjs',
       sourcemap: true,
     },
     plugins: [
-      typescript({ tsconfig: './tsconfig.json' }),
+      typescript({ tsconfig: './tsconfig.json', declaration: true, declarationDir: 'dist', rootDir: 'src' }),
       resolve(),
       commonjs(),
       terser()
