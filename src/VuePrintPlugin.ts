@@ -7,6 +7,7 @@ class PrintPlugin {
    * Creates an instance of PrintPlugin.
    * @param {object} options - The configuration options for the print plugin.
    * @param {string} options.ids - The ID of the HTML element to print.
+   * @param {string} options.styleString - The override styles, used when the HTML element to print.
    * @param {string} [options.standard='html5'] - The HTML standard to use ('strict', 'loose', 'html5').
    * @param {string} [options.url] - URL to load in the iframe for printing.
    * @param {Function} [options.asyncUrl] - Function to asynchronously load content for printing.
@@ -52,7 +53,7 @@ class PrintPlugin {
     if (this.settings.asyncUrl) {
       // Handle asynchronous content loading
       return void self.settings.asyncUrl(function (asyncContent) {
-        let printWindowContext = self.getPrintWindow(asyncContent) // Pass content directly if it's HTML string, or handle URL if it's a URL
+        const printWindowContext = self.getPrintWindow(asyncContent) // Pass content directly if it's HTML string, or handle URL if it's a URL
         if (self.settings.preview) {
           self.loadPreviewIframe()
         } else {
@@ -62,7 +63,7 @@ class PrintPlugin {
     }
 
     // Handle synchronous content or direct URL
-    let printWindowContext = this.getPrintWindow(iframeSrc)
+    const printWindowContext = this.getPrintWindow(iframeSrc)
     if (!this.settings.url) {
       this.writeContentToIframe(printWindowContext.doc)
     }
@@ -160,7 +161,7 @@ class PrintPlugin {
   print(printWindowContext) {
     const self = this
     const iframeElement =
-      document.getElementById(this.settings.id) || printWindowContext.f
+      document.getElementById(this.settings.ids) || printWindowContext.f
     const iframeWindow = iframeElement.contentWindow
 
     if (self.settings.beforeOpenCallback) {
@@ -227,7 +228,7 @@ class PrintPlugin {
   generateHeadHtml() {
     let extraHeadContent = ''
     let styleLinks = ''
-    let inlineStyles = ''
+    let inlineStyles = `${this.settings.styleString ?? ''};.hide-on-print { display: none !important; };`
 
     if (this.settings.extraHead) {
       // Assuming extraHead is a string of HTML tags
@@ -559,7 +560,7 @@ class PrintPlugin {
    * @throws {Error} If iframes are not supported or the iframe document cannot be found.
    */
   createIframeElement(iframeSrcParam) {
-    const iframeId = this.settings.id
+    const iframeId = this.settings.ids
     const iframeSrc =
       iframeSrcParam || `about:blank?timestamp=${new Date().getTime()}` // Ensure unique src if none provided
     const self = this
@@ -602,7 +603,7 @@ class PrintPlugin {
 }
 
 const VuePrintPlugin = {
-  directiveName: 'print', // Default directive name
+  directiveName: 'printv1', // Default directive name
 
   /**
    * Vue directive mounted hook (Vue 2 syntax).
@@ -627,7 +628,7 @@ const VuePrintPlugin = {
         targetElementId = bindingValue
         printOptionsFromBinding = { ids: targetElementId }
       } else if (typeof bindingValue === 'object' && bindingValue !== null) {
-        targetElementId = bindingValue.id
+        targetElementId = bindingValue.ids
         printOptionsFromBinding = { ...bindingValue } // Spread all options from binding
         if (!targetElementId) {
           console.warn(
@@ -716,7 +717,7 @@ const VuePrintPlugin = {
     const directiveName =
       (options && options.directiveName) ||
       VuePrintPlugin.directiveName ||
-      'print'
+      'printv1'
     // Vue 2: App.directive(directiveName, VuePrintPlugin);
     // Vue 3: App.directive(directiveName, VuePrintPlugin);
     if (typeof App.directive === 'function') {

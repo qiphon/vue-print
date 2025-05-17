@@ -1,0 +1,41 @@
+{
+  "name": "@qiphon/vue-print",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/vue-print.cjs.js",
+  "module": "dist/vue-print.esm.js",
+  "types": "dist/VuePrintPlugin.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "docs:dev": "dumi dev",
+    "docs:build": "dumi build",
+    "clean": "rimraf dist",
+    "build": "npm run clean && rollup -c",
+    "prepublishOnly": "npm run build",
+    "release": "npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qiphon/vue-print.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/qiphon/vue-print/issues"
+  },
+  "homepage": "https://github.com/qiphon/vue-print#readme",
+  "devDependencies": {
+    "@ant-design/cssinjs": "^1.23.0",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "dumi": "^2.4.21",
+    "rimraf": "^6.0.1",
+    "rollup": "^3.29.5"
+  }
+}
