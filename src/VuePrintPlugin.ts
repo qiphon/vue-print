@@ -6,6 +6,17 @@ import { IdString, PrintOptions } from "./types"; // Import the new interface
  */
 export class PrintPlugin {
   settings:PrintOptions;
+  counter: number;
+  previewPrintButton: HTMLElement | null;
+  closeButtonElement: HTMLElement | null
+  previewBody: HTMLElement | null;
+  standards: { strict: string; loose: string; html5: string };
+  elsdom: HTMLElement | null;
+  
+  /**
+   * Creates an iframe element for the print preview or print content.
+   * @param {string} src - The source URL for the iframe.
+   * @returns {HTMLIFrameElement} The created iframe element.
   /**
    * Creates an instance of PrintPlugin.
    * @param {PrintOptions} options - The configuration options for the print plugin.
@@ -15,8 +26,8 @@ export class PrintPlugin {
     this.previewBody = null;
     this.closeButtonElement = null; // Renamed from 'close'
     this.previewPrintButton = null; // Renamed from 'previewBodyUtilPrintBtn'
-    this.selectArray = []; // This property is initialized but not used. Consider removing if not needed.
     this.counter = 0;
+    this.elsdom = null;
     this.settings = { standard: this.standards.html5 } as PrintOptions; // Cast to PrintOptions
     Object.assign(this.settings, options);
     this.init();
@@ -191,7 +202,7 @@ export class PrintPlugin {
   writeContentToIframe(doc: Document) {
     doc.open();
     doc.write(
-      `${this.generateDocType()}<html>${this.generateHeadHtml()}${this.generateBodyHtml()}</html>`
+      `${this.generateDocType()}<html >${this.generateHeadHtml()}${this.generateBodyHtml()}</html>`
     );
     doc.close();
   }
@@ -219,12 +230,13 @@ export class PrintPlugin {
   generateHeadHtml() {
     let extraHeadContent = "";
     let styleLinks = "";
-    let inlineStyles = `${this.settings.styleString ?? ""};.hide-on-print { display: none !important; };`;
+    let inlineStyles = `${this.settings.styleString ?? ""}html{display: block !important;}.hide-on-print { display: none !important; }`;
 
     if (this.settings.extraHead) {
       // Assuming extraHead is a string of HTML tags
       extraHeadContent = this.settings.extraHead;
     }
+
 
     // Collect <link> tags from the main document
     document
@@ -278,17 +290,36 @@ export class PrintPlugin {
       console.error("No element ID specified for printing.");
       return "<body>Error: No element ID specified.</body>";
     }
-    elementId = elementId.replace(new RegExp("#", "g"), ""); // Remove # if present
-    const targetElement = document.getElementById(elementId);
-
+    const idString = elementId.replace(new RegExp("#", "g"), ""); // Remove # if present
+    const targetElement = document.getElementById(idString);
+  
     if (!targetElement) {
       console.error(`Element with id '${elementId}' not found.`);
       return `<body>Error: Element with id '${elementId}' not found.</body>`;
     }
-
+  
+    // 处理 Element Plus Table
     this.elsdom = this.preprocessElementForPrint(targetElement);
-    return "<body>" + this.getPreparedElementHtml(this.elsdom) + "</body>";
+    this.mvElTable()
+    return "<body style='height:auto;'>" + this.getPreparedElementHtml(this.elsdom) + "</body>";
   }
+/**
+ * move Element Plus Table thead , keep thead and tbody in one table
+ */
+  mvElTable() {
+    const elTables = this.elsdom.querySelectorAll('.el-table__header-wrapper');
+    if (elTables.length > 0) {
+      elTables.forEach((table) => {
+        const thead = table.querySelector('thead');
+        const tbody = table.nextElementSibling?.querySelector('table tbody');
+        if (thead && tbody) {
+          tbody.parentNode.insertBefore(thead, tbody);
+          table.remove();
+        }
+      });
+    }
+  }
+  
 
   /**
    * Pre-processes the HTML element to be printed, primarily converting canvas elements to images.
@@ -296,7 +327,8 @@ export class PrintPlugin {
    * @returns {HTMLElement} The processed HTML element (actually, a clone is processed, original is returned for chaining if needed, but current use is with a clone).
    */
   preprocessElementForPrint(element: HTMLElement): HTMLElement {
-    const clonedElement = element.cloneNode(true); // Work on a clone to avoid modifying the original DOM
+    // Work on a clone to avoid modifying the original DOM
+    const clonedElement = element.cloneNode(true); 
     const canvasElements = clonedElement.querySelectorAll("canvas");
 
     for (let i = 0; i < canvasElements.length; i++) {
@@ -331,7 +363,8 @@ export class PrintPlugin {
    * @returns {string} The outerHTML of the fully prepared element.
    */
   getPreparedElementHtml(processedClonedElement: HTMLElement): string {
-    const finalClonedElement = processedClonedElement.cloneNode(true); // Clone again to isolate form processing
+    // Clone again to isolate form processing
+    const finalClonedElement = processedClonedElement.cloneNode(true); 
     const originalElement = document.getElementById(
       this.settings.ids.replace("#", "")
     ); // Get original element for form values

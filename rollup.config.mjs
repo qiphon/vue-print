@@ -10,6 +10,8 @@ const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 
 const input = 'src/index.ts';
 
+const isProd = process.env.NODE_ENV === 'production';
+const sourcemap = isProd? false : true;
 export default [
   // UMD build
   {
@@ -21,7 +23,7 @@ export default [
       globals: {
         vue: 'Vue' // Assuming Vue is available globally
       },
-      sourcemap: true,
+      sourcemap,
     },
     plugins: [
       typescript({ tsconfig: './tsconfig.json', declaration: true, declarationDir: 'dist', rootDir: 'src' }),
@@ -37,7 +39,7 @@ export default [
     output: {
       file: pkg.module,
       format: 'es',
-      sourcemap: true,
+      sourcemap,
     },
     plugins: [
       typescript({ tsconfig: './tsconfig.json', declaration: true, declarationDir: 'dist', rootDir: 'src' }),
@@ -53,7 +55,7 @@ export default [
     output: {
       file: pkg.main,
       format: 'cjs',
-      sourcemap: true,
+      sourcemap,
     },
     plugins: [
       typescript({ tsconfig: './tsconfig.json', declaration: true, declarationDir: 'dist', rootDir: 'src' }),
